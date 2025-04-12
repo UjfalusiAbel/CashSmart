@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CashSmart.Core.Models;
 using CashSmart.Core.Persistence;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace CashSmart.Application.Models.InvestmentManagement
 {
@@ -18,10 +19,20 @@ namespace CashSmart.Application.Models.InvestmentManagement
         public class ListInvestmentsByUserRequestHandler : IRequestHandler<ListInvestmentsByUserRequest, List<Investment>>
         {
             private readonly ApplicationDbContext dbContext;
+            public ListInvestmentsByUserRequestHandler(ApplicationDbContext dbContext)
+            {
+                this.dbContext = dbContext;
+            }
+
             public async Task<List<Investment>> Handle(ListInvestmentsByUserRequest request, CancellationToken cancellationToken)
             {
-                var investments = 1;
-                throw new NotImplementedException();
+                var userExists = await dbContext.Users.AnyAsync(s => s.Id == request.UserId);
+                if (!userExists)
+                {
+                    throw new Exception("User does not exist!");
+                }
+                var investments = await dbContext.Investments.Where(x => x.UserId == request.UserId).ToListAsync();
+                return investments;
             }
         }
     }

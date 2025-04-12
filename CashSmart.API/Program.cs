@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MediatR;
 using CashSmart.Application.Models.UserManagement;
+using CashSmart.Application.Models.InvestmentManagement;
 
 Env.Load("../.env");
 
@@ -101,6 +102,8 @@ builder.Services.AddScoped<JwtTokenService>();
 builder.Services.AddMediatR(typeof(GetUserByEmail.Handler).Assembly);
 builder.Services.AddMediatR(typeof(LoginUser.Handler).Assembly);
 builder.Services.AddMediatR(typeof(RegisterUser.Handler).Assembly);
+builder.Services.AddMediatR(typeof(AddInvestment.AddInvestmentRequestHandler).Assembly);
+builder.Services.AddMediatR(typeof(ListInvestmentsByUser.ListInvestmentsByUserRequestHandler).Assembly);
 
 builder.Services.AddAuthentication(options =>
 {

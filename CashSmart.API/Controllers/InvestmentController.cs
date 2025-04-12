@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CashSmart.Application.Models.InvestmentManagement;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,15 +19,40 @@ namespace CashSmart.API.Controllers
 
         [Authorize]
         [HttpPost("[controller]/add")]
-        public async Task<IActionResult> AddInvestment(string userEmail, string Name, DateTime buyDate, float buyPrice, float fee, float quantity)
+        public async Task<IActionResult> AddInvestment(Guid userId, string Name, DateTime buyDate, float buyPrice, float fee, float quantity, CancellationToken cancellationToken)
         {
-            return Ok();
+            try
+            {
+                await mediator.Send(new AddInvestment.AddInvestmentRequest
+                {
+                    UserId = userId,
+                    Name = Name,
+                    BuyDate = buyDate,
+                    BuyPrice = buyPrice,
+                    Fee = fee,
+                    Quantity = quantity
+                }, cancellationToken);
+
+                return Ok("Investment added successfully!");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("[controller]/get-by-user")]
-        public async Task<IActionResult> ListInvestmentsByUser([FromForm] string userEmail)
+        public async Task<IActionResult> ListInvestmentsByUser([FromForm] Guid UserId)
         {
-            return Ok();
+            try
+            {
+                var investments = await mediator.Send(new ListInvestmentsByUser.ListInvestmentsByUserRequest { UserId = UserId });
+                return Ok(investments);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

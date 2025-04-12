@@ -22,6 +22,38 @@ namespace CashSmart.Core.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("CashSmart.Core.Models.Investment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("BuyDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<float>("BuyPrice")
+                        .HasColumnType("real");
+
+                    b.Property<float>("Fee")
+                        .HasColumnType("real");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<float>("Quantity")
+                        .HasColumnType("real");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Investments");
+                });
+
             modelBuilder.Entity("CashSmart.Core.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -55,6 +87,17 @@ namespace CashSmart.Core.Migrations
                         .IsUnique();
 
                     b.ToTable("Users", (string)null);
+                });
+
+            modelBuilder.Entity("CashSmart.Core.Models.Investment", b =>
+                {
+                    b.HasOne("CashSmart.Core.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

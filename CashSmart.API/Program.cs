@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MediatR;
+using CashSmart.Application.Models.UserManagement;
 
 Env.Load("../.env");
 
@@ -95,6 +97,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<JwtTokenService>();
 
+// MediatR
+builder.Services.AddMediatR(typeof(GetUserByEmail.Handler).Assembly);
+builder.Services.AddMediatR(typeof(LoginUser.Handler).Assembly);
+builder.Services.AddMediatR(typeof(RegisterUser.Handler).Assembly);
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = "JwtBearer";
@@ -152,6 +159,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.MapControllers();
 app.UseAuthentication();
 
 app.UseHttpsRedirection();

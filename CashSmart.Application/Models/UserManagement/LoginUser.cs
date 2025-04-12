@@ -8,46 +8,51 @@ using CashSmart.Core.Models;
 using CashSmart.Core.Persistence;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 
 namespace CashSmart.Application.Models.UserManagement
 {
-    public class RegisterUser
+    public class LoginUser
     {
         public class Command : IRequest<string>
         {
-            public required string Email { get; set; }
-            public required string Password { get; set; }
             public required string UserName { get; set; }
+            public required string Password { get; set; }
         }
+
         public class Handler : IRequestHandler<Command, string>
         {
             private readonly ApplicationDbContext _context;
             private readonly IMediator _mediator;
             private readonly IPasswordHasher<User> _passwordHasher;
+            private readonly IConfiguration _config;
             private readonly JwtTokenService _jwtTokenService;
-            public Handler(ApplicationDbContext context, IMediator mediator, IPasswordHasher<User> passwordHasher, JwtTokenService jwtTokenService)
+            public Handler(ApplicationDbContext context, IMediator mediator, IPasswordHasher<User> passwordHasher, IConfiguration config, JwtTokenService jwtTokenService)
             {
                 _context = context;
                 _mediator = mediator;
                 _passwordHasher = passwordHasher;
+                _config = config;
                 _jwtTokenService = jwtTokenService;
             }
             public async Task<string> Handle(Command command, CancellationToken cancellationToken)
             {
-                var ExistingUser = await _mediator.Send(new GetUserByEmail.Query { Email = command.Email });
+                var ExistingUser = await _mediator.Send(new GetUserByEmail.Query { Email = command.UserName });
 
-                if (ExistingUser != null)
+                if (ExistingUser == null)
                 {
-                    throw new UserAlreadyExistsException();
+                    throw new UserDoesNotExistException();
                 }
 
-                var User = new User { Email = command.Email, UserName = command.UserName };
-                User.PasswordHash = _passwordHasher.HashPassword(User, command.Password);
+                var passwordVerificationResult = _passwordHasher.VerifyHashedPassword(ExistingUser, ExistingUser.PasswordHash, command.Password);
 
-                await _context.Users.AddAsync(User, cancellationToken);
-                await _context.SaveChangesAsync(cancellationToken);
+                if (passwordVerificationResult == PasswordVerificationResult.Failed)
+                {
+                    throw new IncorrectCredentialsException();
+                }
 
-                return _jwtTokenService.GenerateJwtToken(User);
+                var token = _jwtTokenService.GenerateJwtToken(ExistingUser);
+                return token;
             }
         }
     }

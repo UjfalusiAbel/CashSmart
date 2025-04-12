@@ -1,10 +1,8 @@
 ARG DOTNET_RUNTIME=mcr.microsoft.com/dotnet/aspnet:9.0
 ARG DOTNET_SDK=mcr.microsoft.com/dotnet/sdk:9.0
 
+
 FROM ${DOTNET_RUNTIME} AS base
-
-RUN apt-get update && apt-get install -y curl
-
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
@@ -12,21 +10,28 @@ EXPOSE 443
 FROM ${DOTNET_SDK} AS build
 WORKDIR /src
 
+ENV ASPNETCORE_ENVIRONMENT=Production
 
+COPY ["CashSmart.API/CashSmart.API.csproj", "API/"]
+COPY ["CashSmart.Application/CashSmart.Application.csproj", "Application/"]
+COPY ["CashSmart.Core/CashSmart.Core.csproj", "Domain/"]
+
+RUN dotnet restore "API/CashSmart.API.csproj"
 
 COPY . .
-RUN dotnet restore "CashSmart.API/CashSmart.API.csproj"
 
-ENV ASPNETCORE_URLS="http://+:80"
+COPY .env ../.env
 
-WORKDIR /src/CassiniConnect.API
-RUN dotnet publish "CashSmart.API.csproj" -c Release --no-restore -o /app/publish
+WORKDIR /src/API
+RUN dotnet build "CashSmart.API.csproj" -c Release -o /app/build
+
+FROM build AS publish
+WORKDIR /src/API
+RUN dotnet publish "CashSmart.API.csproj" -c Release -o /app/publish
+
 
 FROM base AS final
 WORKDIR /app
+COPY --from=publish /app/publish .
 
-ENV ASPNETCORE_ENVIRONMENT=Production
-
-COPY --from=build /app/publish .
-
-ENTRYPOINT [ "dotnet", "CashSmart.API.dll" ]
+ENTRYPOINT [ "dotnet", "API.dll" ]

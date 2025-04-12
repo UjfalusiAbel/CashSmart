@@ -7,13 +7,20 @@ using System.Threading.Tasks;
 using CashSmart.Application.DTO.Requests;
 using CashSmart.Application.Exceptions;
 using CashSmart.Application.Models.UserManagement;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CashSmart.API.Controllers
 {
     [Route("user")]
-    public class UserController : BaseController
+    public class UserController : ControllerBase
     {
+        private IMediator mediator;
+        public UserController(IMediator mediator)
+        {
+            this.mediator = mediator;
+        }
+
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -27,7 +34,7 @@ namespace CashSmart.API.Controllers
 
             try
             {
-                string token = await Mediator.Send(new RegisterUser.Command
+                string token = await mediator.Send(new RegisterUser.Command
                 {
                     Email = request.Email,
                     Password = request.Password,
@@ -76,7 +83,7 @@ namespace CashSmart.API.Controllers
 
             try
             {
-                string token = await Mediator.Send(new LoginUser.Command { UserName = request.Email, Password = request.Password });
+                string token = await mediator.Send(new LoginUser.Command { UserName = request.Email, Password = request.Password });
                 return Ok(token);
             }
             catch (UserDoesNotExistException udne)

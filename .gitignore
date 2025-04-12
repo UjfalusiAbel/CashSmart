@@ -1,4 +1,70 @@
-#bin
+# .NET Core
 bin/
 obj/
+*.user
+*.suo
+*.userprefs
+*.userosscache
+*.sln.docstates
+*.nupkg
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+msbuild.log
+msbuild.err
+msbuild.wrn
+
+# Visual Studio
+.vs/
+.vscode/
+*.swp
+*.swo
+*~
+*.orig
+*.log
+*.pyc
+*.ilk
+*.pdb
+*.meta
+
+# Environment files
 .env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# NuGet
+.nuget/
+*.nupkg
+NuGet.exe
+packages/
+
+# Rider
+.idea/
+*.sln.iml
+
+# User-specific files
+*.userprefs
+
+# Test results
+TestResults/
+*.trx
+
+# Azure
+*.azurePubxml
+*.pubxml
+*.publishsettings
+
+# Mac
+.DS_Store

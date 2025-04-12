@@ -12,10 +12,19 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.4" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.8.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="DotNetEnv" Version="3.1.1" />
+
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CashSmart.Application\CashSmart.Application.csproj" />
+    <ProjectReference Include="..\CashSmart.Core\CashSmart.Core.csproj" />
   </ItemGroup>
 
 </Project>

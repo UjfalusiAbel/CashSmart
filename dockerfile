@@ -1,5 +1,5 @@
-ARG DOTNET_RUNTIME=mcr.microsoft.com/dotnet/aspnet:8.0
-ARG DOTNET_SDK=mcr.microsoft.com/dotnet/sdk:8.0
+ARG DOTNET_RUNTIME=mcr.microsoft.com/dotnet/aspnet:9.0
+ARG DOTNET_SDK=mcr.microsoft.com/dotnet/sdk:9.0
 
 FROM ${DOTNET_RUNTIME} AS base
 

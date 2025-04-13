@@ -13,7 +13,7 @@ using MediatR;
 using CashSmart.Application.Models.UserManagement;
 using CashSmart.Application.Models.InvestmentManagement;
 
-public class CassiniApp()
+public class CashSmartApp()
 {
     public static void Main(string[] args)
     {
@@ -97,9 +97,7 @@ public class CassiniApp()
                 throw new InvalidOperationException("Connection string not found in environment variables.");
             }
 
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(connectionString,
-                    npgsqlOptions => npgsqlOptions.MigrationsAssembly("CashSmart.Core")));
+            builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
 
             builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
             builder.Services.AddScoped<JwtTokenService>();
@@ -137,21 +135,6 @@ public class CassiniApp()
                 app.MapOpenApi();
             }
 
-            using (var scope = app.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-                try
-                {
-                    var context = services.GetRequiredService<ApplicationDbContext>();
-                    context.Database.EnsureCreated();
-                    context.Database.Migrate();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
-            }
-
             if (app.Environment.IsProduction())
             {
                 Console.WriteLine("Production cors.");
@@ -173,6 +156,21 @@ public class CassiniApp()
             app.UseAuthentication();
 
             app.UseHttpsRedirection();
+
+            try
+            {
+                using (var scope = app.Services.CreateScope())
+                {
+                    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                    context.Database.Migrate();
+                }
+            }
+            catch (Exception ex)
+            {
+                var logger = app.Services.GetRequiredService<ILogger<CashSmartApp>>();
+                logger.LogError(ex, "Error during migration");
+            }
+
 
             app.Run();
 

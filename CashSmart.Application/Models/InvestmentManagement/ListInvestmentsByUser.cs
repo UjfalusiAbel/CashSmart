@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CashSmart.Application.Exceptions;
 using CashSmart.Core.Models;
 using CashSmart.Core.Persistence;
 using MediatR;
@@ -29,7 +30,7 @@ namespace CashSmart.Application.Models.InvestmentManagement
                 var userExists = await dbContext.Users.AnyAsync(s => s.Id == request.UserId);
                 if (!userExists)
                 {
-                    throw new Exception("User does not exist!");
+                    throw new NotExistingObjectExceptions("User");
                 }
                 var investments = await dbContext.Investments.Where(x => x.UserId == request.UserId).ToListAsync();
                 return investments;

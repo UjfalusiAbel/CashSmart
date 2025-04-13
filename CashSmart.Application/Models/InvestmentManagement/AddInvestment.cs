@@ -41,11 +41,16 @@ namespace CashSmart.Application.Models.InvestmentManagement
                 {
                     Id = Guid.NewGuid(),
                     Name = request.Name,
-                    BuyDate = request.BuyDate,
+                    BuyDate = DateTime.SpecifyKind(request.BuyDate, DateTimeKind.Utc),
                     BuyPrice = request.BuyPrice,
                     Fee = request.Fee,
                     Quantity = request.Quantity,
+                    UserId = request.UserId
                 };
+
+
+                dbContext.Investments.Add(investment);
+                await dbContext.SaveChangesAsync();
 
                 return Unit.Value;
             }

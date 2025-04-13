@@ -127,6 +127,8 @@ public class CashSmartApp()
                     };
                 });
 
+            builder.Services.AddAuthorization();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -154,6 +156,7 @@ public class CashSmartApp()
 
             app.MapControllers();
             app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseHttpsRedirection();
 

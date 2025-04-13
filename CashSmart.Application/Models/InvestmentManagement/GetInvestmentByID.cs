@@ -7,6 +7,7 @@ using CashSmart.Application.Exceptions;
 using CashSmart.Core.Models;
 using CashSmart.Core.Persistence;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace CashSmart.Application.Models.InvestmentManagement
 {
@@ -25,8 +26,7 @@ namespace CashSmart.Application.Models.InvestmentManagement
             }
             public async Task<Investment> Handle(Request request, CancellationToken cancellationToken)
             {
-                var investment = _context.Investments
-                    .Where(i => i.Id == request.Id).FirstOrDefault();
+                var investment = await _context.Investments.Where(i => i.Id == request.Id).FirstOrDefaultAsync();
 
                 if (investment == null)
                 {
